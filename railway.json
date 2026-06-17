@@ -1,0 +1,11 @@
+{
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "pip install -r requirements.txt"
+  },
+  "deploy": {
+    "startCommand": "gunicorn core.wsgi:application",
+    "healthcheckPath": "/dashboard",
+    "restartPolicyType": "ON_FAILURE"
+  }
+}
