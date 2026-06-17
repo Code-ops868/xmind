@@ -1,0 +1,49 @@
+{% if messages %}
+<div id="message-container">
+    {% for message in messages %}
+    <div style="background: rgba(40,167,69,0.2); border-left: 4px solid #28a745; padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 1rem; color: #28a745;">
+        ✅ {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+    {% for goal in goals %}
+    <div style="background: var(--bg-secondary); border-radius: 1rem; padding: 1.5rem; border: 1px solid var(--orange-soft);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="color: var(--gold-primary);">{{ goal.month|date:"F/Y" }}</h3>
+            <form action="{% url 'financas:delete_goal' goal.id %}" 
+                  method="post" 
+                  style="display: inline;" 
+                  onsubmit="return confirm('Tem certeza que deseja excluir esta meta?');"
+                  hx-post="{% url 'financas:delete_goal' goal.id %}"
+                  hx-target="#goals-content"
+                  hx-swap="innerHTML"
+                  hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+                {% csrf_token %}
+                <button type="submit" style="background: none; border: none; color: #dc3545; cursor: pointer; font-size: 1.2rem;" title="Excluir meta">
+                    🗑️
+                </button>
+            </form>
+        </div>
+        <div style="margin-bottom: 0.5rem;">
+            <span style="color: var(--text-secondary);">Meta Entradas:</span>
+            <span style="color: #28a745; font-weight: bold;">{{ goal.goal_entradas|floatformat:2 }} MZN</span>
+        </div>
+        <div style="margin-bottom: 0.5rem;">
+            <span style="color: var(--text-secondary);">Meta Saídas:</span>
+            <span style="color: #dc3545; font-weight: bold;">{{ goal.goal_saidas|floatformat:2 }} MZN</span>
+        </div>
+        <div>
+            <span style="color: var(--text-secondary);">Meta Saldo:</span>
+            <span style="color: var(--gold-primary); font-weight: bold;">{{ goal.goal_saldo|floatformat:2 }} MZN</span>
+        </div>
+    </div>
+    {% empty %}
+    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-secondary);">
+        <p style="font-size: 3rem; margin-bottom: 1rem;">📭</p>
+        <p>Nenhuma meta definida. Clique em "Nova Meta" para começar.</p>
+    </div>
+    {% endfor %}
+</div>

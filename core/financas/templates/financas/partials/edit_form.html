@@ -1,0 +1,69 @@
+<div id="edit-modal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px);">
+    <div style="background: var(--bg-secondary); border-radius: 1rem; padding: 2rem; max-width: 500px; width: 90%; border: 1px solid var(--gold-primary); max-height: 90vh; overflow-y: auto;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2 style="color: var(--gold-primary); margin: 0;">✏️ Editar Lançamento</h2>
+            <button onclick="this.closest('#edit-modal').remove()" 
+                    style="background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+        </div>
+        
+        {% if error %}
+        <div style="background: rgba(220,53,69,0.2); border-left: 4px solid #dc3545; padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 1rem; color: #dc3545;">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        <form hx-post="{% url 'financas:edit_transaction' transaction.id %}" 
+              hx-target="#edit-modal" 
+              hx-swap="outerHTML">
+            {% csrf_token %}
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--gold-primary);">📅 Data da Transação</label>
+                {{ form.transaction_date }}
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--gold-primary);">📝 Descrição</label>
+                {{ form.description }}
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--gold-primary);">💰 Valor (MZN)</label>
+                {{ form.amount }}
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--gold-primary);">🔄 Tipo</label>
+                {{ form.entry_type }}
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--gold-primary);">📂 Categoria</label>
+                {{ form.category }}
+            </div>
+            
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn-primary" style="flex: 1;">💾 Atualizar</button>
+                <button type="button" onclick="this.closest('#edit-modal').remove()" class="btn-secondary" style="flex: 1;">❌ Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        background: var(--bg-tertiary);
+        border: 2px solid var(--orange-soft);
+        color: var(--text-primary);
+        border-radius: 0.5rem;
+        font-size: 1rem;
+    }
+    .form-control:focus {
+        border-color: var(--gold-primary);
+        outline: none;
+        box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+    }
+</style>

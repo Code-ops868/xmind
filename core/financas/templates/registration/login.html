@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login - XMIND{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
+    <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 1rem; border: 1px solid var(--orange-soft); max-width: 400px; width: 100%;">
+        <h2 style="color: var(--gold-primary); text-align: center; margin-bottom: 1.5rem;">💰 XMIND</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Usuário</label>
+                <input type="text" name="username" required placeholder="Digite seu usuário">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Senha</label>
+                <input type="password" name="password" required placeholder="Digite sua senha">
+            </div>
+            <button type="submit" class="btn-primary" style="width: 100%;">Entrar</button>
+        </form>
+        <p style="text-align: center; margin-top: 1rem; color: var(--text-secondary);">Demo: admin / admin123</p>
+    </div>
+</div>
+{% endblock %}

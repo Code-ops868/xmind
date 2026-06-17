@@ -1,0 +1,178 @@
+/* ==================== RESPONSIVIDADE ==================== */
+
+/* TABLET (768px - 1024px) */
+@media (max-width: 1024px) {
+    .indicators-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+    
+    .indicator-value {
+        font-size: 1.4rem;
+    }
+    
+    .indicator-card {
+        padding: 1rem;
+    }
+}
+
+/* SMARTPHONES (até 768px) */
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .indicators-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.5rem !important;
+        width: 100% !important;
+    }
+    
+    .indicator-card {
+        padding: 0.75rem !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+    }
+    
+    .indicator-value {
+        font-size: 1.1rem !important;
+        word-break: break-word !important;
+    }
+    
+    .indicator-title {
+        font-size: 0.65rem !important;
+        margin-bottom: 0.2rem !important;
+    }
+    
+    .indicator-subtitle {
+        font-size: 0.55rem !important;
+        margin-top: 0.15rem !important;
+    }
+    
+    .chart-container,
+    .transactions-container {
+        padding: 0.75rem !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    .section-title {
+        font-size: 0.9rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    th, td {
+        padding: 0.3rem 0.25rem !important;
+        font-size: 0.65rem !important;
+    }
+    
+    table {
+        min-width: 300px !important;
+    }
+    
+    .btn-action {
+        font-size: 0.75rem !important;
+        padding: 0.1rem 0.15rem !important;
+    }
+}
+
+/* SMARTPHONES PEQUENOS (até 480px) */
+@media (max-width: 480px) {
+    .indicators-grid {
+        gap: 0.4rem !important;
+    }
+    
+    .indicator-card {
+        padding: 0.5rem !important;
+        border-left-width: 3px !important;
+        border-radius: 0.5rem !important;
+    }
+    
+    .indicator-value {
+        font-size: 0.85rem !important;
+    }
+    
+    .indicator-title {
+        font-size: 0.5rem !important;
+    }
+    
+    .indicator-subtitle {
+        font-size: 0.45rem !important;
+    }
+    
+    .chart-container,
+    .transactions-container {
+        padding: 0.5rem !important;
+        border-radius: 0.5rem !important;
+    }
+    
+    .section-title {
+        font-size: 0.75rem !important;
+    }
+    
+    th, td {
+        padding: 0.2rem 0.15rem !important;
+        font-size: 0.55rem !important;
+    }
+    
+    table {
+        min-width: 250px !important;
+    }
+}
+
+/* SMARTPHONES MUITO PEQUENOS (até 380px) */
+@media (max-width: 380px) {
+    .indicators-grid {
+        gap: 0.3rem !important;
+    }
+    
+    .indicator-card {
+        padding: 0.35rem !important;
+        border-left-width: 2px !important;
+    }
+    
+    .indicator-value {
+        font-size: 0.7rem !important;
+    }
+    
+    .indicator-title {
+        font-size: 0.4rem !important;
+    }
+    
+    .indicator-subtitle {
+        font-size: 0.35rem !important;
+    }
+    
+    .section-title {
+        font-size: 0.65rem !important;
+    }
+    
+    th, td {
+        padding: 0.1rem 0.1rem !important;
+        font-size: 0.45rem !important;
+    }
+}
+
+/* GRÁFICOS EM TELAS PEQUENAS */
+@media (max-width: 768px) {
+    .chart-container canvas {
+        max-height: 150px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .chart-container canvas {
+        max-height: 120px !important;
+    }
+}
+
+/* GRÁFICOS DE PIZZA RESPONSIVOS */
+@media (max-width: 768px) {
+    div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+    }
+}

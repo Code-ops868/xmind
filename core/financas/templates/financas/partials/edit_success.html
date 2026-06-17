@@ -1,0 +1,16 @@
+<div id="edit-modal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px);">
+    <div style="background: var(--bg-secondary); border-radius: 1rem; padding: 2rem; max-width: 400px; width: 90%; text-align: center; border: 1px solid #28a745;">
+        
+        <div style="font-size: 4rem; margin-bottom: 1rem;">✅</div>
+        <h2 style="color: #28a745; margin-bottom: 1rem;">Atualizado!</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">{{ message }}</p>
+        
+        <button onclick="location.reload()" class="btn-primary" style="width: 100%;">🔄 Atualizar Dashboard</button>
+    </div>
+</div>
+
+<script>
+    setTimeout(function() {
+        location.reload();
+    }, 1500);
+</script>

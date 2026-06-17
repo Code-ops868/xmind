@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Metas Financeiras - Fluxo de Caixa{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<style>
+    .goal-card {
+        background: var(--bg-secondary);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        border: 1px solid var(--orange-soft);
+    }
+    .goal-card h3 {
+        color: var(--gold-primary);
+        margin: 0;
+    }
+    .goal-card .label {
+        color: var(--text-secondary);
+    }
+    .goal-card .value-entrada {
+        color: #28a745;
+        font-weight: bold;
+    }
+    .goal-card .value-saida {
+        color: #dc3545;
+        font-weight: bold;
+    }
+    .goal-card .value-saldo {
+        color: var(--gold-primary);
+        font-weight: bold;
+    }
+    .btn-delete {
+        background: none;
+        border: none;
+        color: #dc3545;
+        cursor: pointer;
+        font-size: 1.2rem;
+    }
+    .btn-delete:hover {
+        color: #c82333;
+    }
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.85);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        backdrop-filter: blur(4px);
+    }
+    .modal-content {
+        background: var(--bg-secondary);
+        border-radius: 1rem;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        border: 1px solid var(--gold-primary);
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    .modal-header h2 {
+        color: var(--gold-primary);
+        margin: 0;
+    }
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 2rem;
+        cursor: pointer;
+        color: var(--text-secondary);
+        text-decoration: none;
+    }
+    .modal-close:hover {
+        color: var(--text-primary);
+    }
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        background: var(--bg-tertiary);
+        border: 2px solid var(--orange-soft);
+        color: var(--text-primary);
+        border-radius: 0.5rem;
+        font-size: 1rem;
+    }
+    .form-control:focus {
+        border-color: var(--gold-primary);
+        outline: none;
+        box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+    }
+    .btn-group {
+        display: flex;
+        gap: 1rem;
+    }
+    .btn-group button, .btn-group a {
+        flex: 1;
+        text-align: center;
+    }
+    .btn-success {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-success:hover {
+        background: #218838;
+        transform: translateY(-2px);
+    }
+    .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 2rem;
+        border-radius: 0.5rem;
+        z-index: 2000;
+        animation: slideIn 0.3s ease;
+    }
+    .toast-success {
+        background: #28a745;
+        color: white;
+    }
+    .toast-error {
+        background: #dc3545;
+        color: white;
+    }
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    .error-message {
+        background: rgba(220,53,69,0.2);
+        border-left: 4px solid #dc3545;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        color: #dc3545;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 style="color: var(--gold-primary);">🎯 Metas Financeiras</h2>
+        <a href="{% url 'financas:goals_page' %}?action=add" class="btn-primary" style="text-decoration: none; display: inline-block;">
+            ➕ Nova Meta
+        </a>
+    </div>
+    
+    <div id="goals-list">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+            {% for goal in goals %}
+            <div class="goal-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3>{{ goal.month|date:"F/Y" }}</h3>
+                    <form action="{% url 'financas:delete_goal' goal.id %}" method="post" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta meta?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-delete">🗑️</button>
+                    </form>
+                </div>
+                <div style="margin-bottom: 0.5rem;">
+                    <span class="label">Meta Entradas:</span>
+                    <span class="value-entrada">{{ goal.goal_entradas|floatformat:2 }} MZN</span>
+                </div>
+                <div style="margin-bottom: 0.5rem;">
+                    <span class="label">Meta Saídas:</span>
+                    <span class="value-saida">{{ goal.goal_saidas|floatformat:2 }} MZN</span>
+                </div>
+                <div>
+                    <span class="label">Meta Saldo:</span>
+                    <span class="value-saldo">{{ goal.goal_saldo|floatformat:2 }} MZN</span>
+                </div>
+            </div>
+            {% empty %}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-secondary);">
+                <p style="font-size: 3rem; margin-bottom: 1rem;">📭</p>
+                <p>Nenhuma meta definida. Clique em "Nova Meta" para começar.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal para adicionar meta -->
+{% if request.GET.action == 'add' %}
+<div class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>🎯 Nova Meta</h2>
+            <a href="{% url 'financas:goals_page' %}" class="modal-close">&times;</a>
+        </div>
+        
+        {% if error %}
+        <div class="error-message">
+            ❌ {{ error }}
+        </div>
+        {% endif %}
+        
+        <form method="post" action="{% url 'financas:add_goal' %}">
+            {% csrf_token %}
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--gold-primary);">📅 Mês de Referência</label>
+                <input type="month" name="month" class="form-control" required>
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: #28a745;">📈 Meta de Entradas (MZN)</label>
+                <input type="number" step="0.01" name="goal_entradas" class="form-control" required placeholder="0,00">
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: #dc3545;">📉 Meta de Saídas (MZN)</label>
+                <input type="number" step="0.01" name="goal_saidas" class="form-control" required placeholder="0,00">
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--gold-primary);">💰 Meta de Saldo (MZN)</label>
+                <input type="number" step="0.01" name="goal_saldo" class="form-control" required placeholder="0,00">
+            </div>
+            
+            <div class="btn-group">
+                <button type="submit" class="btn-success">💾 Salvar Meta</button>
+                <a href="{% url 'financas:goals_page' %}" class="btn-secondary" style="text-decoration: none; padding: 0.75rem; display: inline-block; text-align: center;">❌ Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Importar Planilha - Fluxo de Caixa{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/upload.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <div class="upload-card">
+        <h2 class="upload-title">📂 Importar Fluxo de Caixa</h2>
+        <p class="upload-description">Envie sua planilha nos formatos <strong>.csv</strong> ou <strong>.xlsx</strong></p>
+
+        <div id="upload-area" class="upload-area">
+            <form id="upload-form" enctype="multipart/form-data" action="{% url 'financas:process_upload' %}" method="post">
+                {% csrf_token %}
+                <input type="file" name="file" id="file-input" accept=".csv,.xlsx" style="display: none;" onchange="this.form.submit()">
+                <label for="file-input" class="upload-label">
+                    <span class="upload-icon">📁</span>
+                    <span>Arraste ou clique para selecionar</span>
+                    <small class="upload-hint">Suporta .csv e .xlsx</small>
+                </label>
+            </form>
+        </div>
+
+        <div id="upload-result" class="upload-result"></div>
+    </div>
+
+    <div class="upload-history" hx-get="{% url 'financas:get_upload_history' %}" hx-trigger="load, every 60s" hx-swap="innerHTML">
+        <div class="loading-spinner">Carregando histórico...</div>
+    </div>
+</div>
+<script>
+    const dropZone = document.getElementById('upload-area');
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('drag-over'); });
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        document.getElementById('file-input').files = e.dataTransfer.files;
+        document.getElementById('upload-form').submit();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="description" content="Fluxo de Caixa - Gestão financeira para PMEs em Moçambique">
+    <title>{% block title %} XMIND Fluxo de caixa{% endblock %}</title>
+    
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    
+    <!-- CSS Global -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/core.css' %}">
+    
+    <!-- CSS Específico da página -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header com logo -->
+        <header class="main-header">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">
+                    ☰
+                </button>
+                <div class="logo-container">
+                    <span class="logo-icon">💰</span>
+                    <h1 class="logo-text">XMIND, Gestor de FLuxo de Caixa</h1>
+                </div>
+            </div>
+            <div class="user-info">
+                <span class="user-name">{{ request.user.username }}</span>
+                <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn">Sair</button>
+                </form>
+            </div>
+        </header>
+
+        <!-- Overlay para fechar menu mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Sidebar e Main Content -->
+        <div class="main-layout">
+            <aside class="sidebar" id="sidebar">
+                <nav class="nav-menu">
+                    <!-- Menu Principal -->
+                    <a href="{% url 'financas:dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-text">Dashboard</span>
+                    </a>
+                    <a href="{% url 'financas:upload' %}" class="nav-item {% if request.resolver_match.url_name == 'upload' %}active{% endif %}">
+                        <span class="nav-icon">📤</span>
+                        <span class="nav-text">Importar</span>
+                    </a>
+                    <a href="{% url 'financas:goals_page' %}" class="nav-item {% if request.resolver_match.url_name == 'goals_page' %}active{% endif %}">
+                        <span class="nav-icon">🎯</span>
+                        <span class="nav-text">Metas</span>
+                    </a>
+                    
+                    <hr class="nav-divider">
+                    
+                    <!-- Relatórios -->
+                    <span class="nav-label">Relatórios</span>
+                    
+                    <a href="{% url 'financas:generate_report_pdf' %}?periodo=30" class="nav-item" target="_blank">
+                        <span class="nav-icon">📄</span>
+                        <span class="nav-text">Relatório Geral</span>
+                    </a>
+                    <a href="{% url 'financas:generate_report_with_charts' %}?periodo=30" class="nav-item" target="_blank">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-text">Por Categoria</span>
+                    </a>
+                    <a href="{% url 'financas:generate_forecast_report' %}" class="nav-item" target="_blank">
+                        <span class="nav-icon">🔮</span>
+                        <span class="nav-text">Previsão</span>
+                    </a>
+                    <a href="{% url 'financas:generate_goals_report' %}" class="nav-item" target="_blank">
+                        <span class="nav-icon">🏆</span>
+                        <span class="nav-text">Metas & Performance</span>
+                    </a>
+                    
+                    <hr class="nav-divider">
+                    
+                    <!-- Exportar -->
+                    <span class="nav-label">Exportar</span>
+                    
+                    <a href="{% url 'financas:export_excel' %}?periodo=30" class="nav-item" target="_blank">
+                        <span class="nav-icon">📋</span>
+                        <span class="nav-text">Exportar Excel</span>
+                    </a>
+                </nav>
+            </aside>
+
+            <main id="main-content" class="main-content">
+                {% block content %}
+                <!-- Conteúdo principal será carregado aqui -->
+                {% endblock %}
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <p>© 2025 Fluxo de Caixa - Gestão financeira para PMEs em Moçambique</p>
+        </footer>
+    </div>
+    
+    <!-- JavaScript para menu mobile -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            function toggleMenu() {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+                document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
+            }
+            
+            function closeMenu() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            
+            if (menuToggle) {
+                menuToggle.addEventListener('click', toggleMenu);
+            }
+            
+            if (overlay) {
+                overlay.addEventListener('click', closeMenu);
+            }
+            
+            // Fechar menu ao clicar em um link (mobile)
+            document.querySelectorAll('.nav-item').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        closeMenu();
+                    }
+                });
+            });
+            
+            // Fechar menu ao redimensionar para desktop
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    closeMenu();
+                }
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

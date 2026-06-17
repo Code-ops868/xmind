@@ -1,0 +1,185 @@
+<!-- Filtros -->
+<div style="margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; background: var(--bg-tertiary); padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--orange-soft);">
+    
+    <!-- Filtro por Período -->
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <label style="color: var(--gold-primary); font-size: 0.9rem;">📅 Período:</label>
+        <select hx-get="{% url 'financas:get_recent_transactions' %}" 
+                hx-target="#recent-transactions"
+                hx-swap="innerHTML"
+                hx-include="[name='tipo'], [name='categoria'], [name='busca']"
+                name="periodo"
+                style="padding: 0.4rem 0.75rem; border-radius: 0.5rem; background: var(--bg-secondary); border: 1px solid var(--orange-soft); color: var(--text-primary);">
+            <option value="7" {% if periodo == '7' %}selected{% endif %}>7 dias</option>
+            <option value="30" {% if periodo == '30' %}selected{% endif %}>30 dias</option>
+            <option value="90" {% if periodo == '90' %}selected{% endif %}>90 dias</option>
+        </select>
+    </div>
+
+    <!-- Filtro por Tipo -->
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <label style="color: var(--gold-primary); font-size: 0.9rem;">🔄 Tipo:</label>
+        <select hx-get="{% url 'financas:get_recent_transactions' %}" 
+                hx-target="#recent-transactions"
+                hx-swap="innerHTML"
+                hx-include="[name='periodo'], [name='categoria'], [name='busca']"
+                name="tipo"
+                style="padding: 0.4rem 0.75rem; border-radius: 0.5rem; background: var(--bg-secondary); border: 1px solid var(--orange-soft); color: var(--text-primary);">
+            <option value="">Todos</option>
+            <option value="IN" {% if tipo == 'IN' %}selected{% endif %}>📈 Entradas</option>
+            <option value="OUT" {% if tipo == 'OUT' %}selected{% endif %}>📉 Saídas</option>
+        </select>
+    </div>
+
+    <!-- Filtro por Categoria -->
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <label style="color: var(--gold-primary); font-size: 0.9rem;">📂 Categoria:</label>
+        <select hx-get="{% url 'financas:get_recent_transactions' %}" 
+                hx-target="#recent-transactions"
+                hx-swap="innerHTML"
+                hx-include="[name='periodo'], [name='tipo'], [name='busca']"
+                name="categoria"
+                style="padding: 0.4rem 0.75rem; border-radius: 0.5rem; background: var(--bg-secondary); border: 1px solid var(--orange-soft); color: var(--text-primary); min-width: 120px;">
+            <option value="">Todas</option>
+            {% for cat in categorias %}
+            <option value="{{ cat }}" {% if categoria == cat %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Busca por Descrição -->
+    <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1; min-width: 200px;">
+        <label style="color: var(--gold-primary); font-size: 0.9rem;">🔍 Buscar:</label>
+        <input type="text" 
+               name="busca" 
+               value="{{ busca }}"
+               placeholder="Descrição ou categoria..."
+               hx-get="{% url 'financas:get_recent_transactions' %}" 
+               hx-target="#recent-transactions"
+               hx-swap="innerHTML"
+               hx-trigger="keyup changed delay:500ms"
+               hx-include="[name='periodo'], [name='tipo'], [name='categoria']"
+               style="flex: 1; padding: 0.4rem 0.75rem; border-radius: 0.5rem; background: var(--bg-secondary); border: 1px solid var(--orange-soft); color: var(--text-primary);">
+    </div>
+
+    <!-- Botão Limpar Filtros -->
+    <button hx-get="{% url 'financas:get_recent_transactions' %}" 
+            hx-target="#recent-transactions"
+            hx-swap="innerHTML"
+            style="padding: 0.4rem 1rem; border-radius: 0.5rem; background: var(--orange-soft); border: none; color: var(--bg-primary); cursor: pointer; font-weight: bold;">
+        🔄 Limpar
+    </button>
+
+    <!-- Botão Exportar Excel -->
+    <a href="{% url 'financas:export_excel' %}?periodo={{ periodo }}&tipo={{ tipo }}&categoria={{ categoria }}&busca={{ busca }}" 
+       target="_blank"
+       style="padding: 0.4rem 1rem; border-radius: 0.5rem; background: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+        📋 Exportar Excel
+    </a>
+</div>
+
+<!-- Tabela de Transações -->
+<div class="table-responsive" style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="border-bottom: 2px solid var(--orange-soft);">
+                <th style="text-align: left; padding: 0.75rem; color: var(--gold-primary);">Data</th>
+                <th style="text-align: left; padding: 0.75rem; color: var(--gold-primary);">Descrição</th>
+                <th style="text-align: left; padding: 0.75rem; color: var(--gold-primary);">Categoria</th>
+                <th style="text-align: right; padding: 0.75rem; color: var(--gold-primary);">Valor (MZN)</th>
+                <th style="text-align: center; padding: 0.75rem; color: var(--gold-primary);">Tipo</th>
+                <th style="text-align: center; padding: 0.75rem; color: var(--gold-primary);">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in transactions %}
+            <tr style="border-bottom: 1px solid var(--bg-tertiary);">
+                <td style="padding: 0.75rem; color: var(--text-secondary);">{{ entry.transaction_date|date:"d/m/Y" }}</td>
+                <td style="padding: 0.75rem; color: var(--text-secondary);">{{ entry.description }}</td>
+                <td style="padding: 0.75rem; color: var(--text-secondary);">{{ entry.category|default:"-" }}</td>
+                <td style="padding: 0.75rem; text-align: right; color: var(--text-secondary);">{{ entry.amount|floatformat:2 }}</td>
+                <td style="text-align: center; padding: 0.75rem;">
+                    {% if entry.entry_type == 'IN' %}
+                        <span style="color: #28a745;">✅ Entrada</span>
+                    {% else %}
+                        <span style="color: #dc3545;">🔻 Saída</span>
+                    {% endif %}
+                </td>
+                <td style="text-align: center; padding: 0.75rem;">
+                    <button hx-get="{% url 'financas:get_edit_form' entry.id %}" 
+                            hx-target="body" 
+                            hx-swap="beforeend"
+                            style="background: none; border: none; cursor: pointer; font-size: 1.1rem; color: var(--gold-primary);"
+                            title="Editar">
+                        ✏️
+                    </button>
+                    <button hx-get="{% url 'financas:delete_transaction' entry.id %}" 
+                            hx-target="body" 
+                            hx-swap="beforeend"
+                            style="background: none; border: none; cursor: pointer; font-size: 1.1rem; color: #dc3545;"
+                            title="Excluir">
+                        🗑️
+                    </button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 2rem; color: var(--gold-primary);">
+                    📭 Nenhuma transação encontrada com os filtros aplicados.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+    button[title="Editar"]:hover {
+        transform: scale(1.2);
+        transition: transform 0.2s;
+    }
+    button[title="Excluir"]:hover {
+        transform: scale(1.2);
+        transition: transform 0.2s;
+    }
+    a[style*="background: #28a745;"]:hover {
+        opacity: 0.8;
+        transform: scale(1.02);
+        transition: all 0.3s ease;
+    }
+    
+    select, input[type="text"] {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--orange-soft);
+        color: var(--text-primary);
+        padding: 0.4rem 0.75rem;
+        border-radius: 0.5rem;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+    
+    select:focus, input[type="text"]:focus {
+        border-color: var(--gold-primary);
+        outline: none;
+        box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
+    }
+    
+    select option {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+    }
+    
+    @media (max-width: 768px) {
+        .filtros-container {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        th, td {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+        button[title="Editar"], button[title="Excluir"] {
+            font-size: 0.9rem;
+        }
+    }
+</style>

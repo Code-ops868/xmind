@@ -1,0 +1,81 @@
+{% if cleared %}
+<!-- Mensagem de sucesso quando o histórico foi limpo -->
+<div style="text-align: center; padding: 2rem; background: var(--bg-secondary); border-radius: 1rem; border: 1px solid #28a745;">
+    <div style="font-size: 4rem; margin-bottom: 1rem;">🗑️</div>
+    <h2 style="color: #28a745; margin-bottom: 1rem;">Histórico Limpo!</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+        {{ success }}
+    </p>
+    <a href="{% url 'financas:dashboard' %}" 
+       class="btn-primary" 
+       style="display: inline-block; padding: 0.75rem 2rem; text-decoration: none;">
+        📊 Voltar para o Dashboard
+    </a>
+</div>
+
+{% else %}
+
+<!-- Histórico normal -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h3 class="history-title" style="color: var(--gold-primary); margin: 0;">📋 Histórico de Uploads</h3>
+    
+    <!-- Botão Limpar Histórico com formulário -->
+    {% if history %}
+    <form action="{% url 'financas:clear_upload_history' %}" 
+          method="post" 
+          style="display: inline;"
+          onsubmit="return confirm('Tem certeza que deseja limpar todo o histórico de uploads?');">
+        {% csrf_token %}
+        <button type="submit" 
+                style="background: #dc3545; color: white; border: none; padding: 0.4rem 1rem; border-radius: 0.5rem; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 0.5rem;">
+            🗑️ Limpar Histórico
+        </button>
+    </form>
+    {% endif %}
+</div>
+
+{% for item in history %}
+<div style="padding: 0.75rem; border-bottom: 1px solid var(--bg-tertiary);">
+    <strong style="color: var(--text-primary);">{{ item.filename }}</strong><br>
+    Status: 
+    {% if item.status == 'success' %}
+        <span style="color: #28a745;">✅ {{ item.rows_processed }} registros importados</span>
+    {% elif item.status == 'error' %}
+        <span style="color: #dc3545;">❌ Erro: {{ item.error_message|default:"Falha no processamento" }}</span>
+    {% else %}
+        <span style="color: #ffc107;">⏳ Processando...</span>
+    {% endif %}
+    <br>
+    <small style="color: var(--text-secondary);">{{ item.uploaded_at|date:"d/m/Y H:i:s" }}</small>
+</div>
+{% empty %}
+<div style="padding: 2rem; text-align: center; color: var(--gold-primary);">
+    📭 Nenhum upload realizado ainda
+</div>
+{% endfor %}
+
+{% endif %}
+
+<style>
+    .btn-primary {
+        background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary));
+        color: var(--bg-primary);
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+    }
+    button:hover {
+        opacity: 0.8;
+        transform: scale(1.02);
+        transition: all 0.3s ease;
+    }
+</style>

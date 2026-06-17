@@ -1,0 +1,17 @@
+{% if success %}
+<div style="background: rgba(40,167,69,0.2); border-left: 4px solid #28a745; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem;">
+    <strong style="color: #28a745;">✅ Sucesso!</strong><br>
+    {{ message }}
+</div>
+<script>
+    // Recarregar os indicadores e histórico após 2 segundos
+    setTimeout(function() {
+        location.reload();
+    }, 2000);
+</script>
+{% else %}
+<div style="background: rgba(220,53,69,0.2); border-left: 4px solid #dc3545; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem;">
+    <strong style="color: #dc3545;">❌ Erro!</strong><br>
+    {{ message }}
+</div>
+{% endif %}
