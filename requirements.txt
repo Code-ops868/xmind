@@ -11,4 +11,4 @@ matplotlib==3.7.1
 pillow==10.3.0
 celery==5.3.4
 redis==5.0.1
-dj-database-url==2.3.0
+
